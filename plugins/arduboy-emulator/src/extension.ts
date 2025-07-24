@@ -3,11 +3,15 @@
 import * as vscode from "vscode";
 
 import { getPlayerWebviewHtml } from "./playerWebView";
+import { generateDefaultConfig, getFirmwarePath } from "./config";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  vscode.commands.registerCommand("arduboy-emulator.openEmulator", () => {
+  // Keep track of active emulator panels
+  const activePanels = new Set<vscode.WebviewPanel>();
+
+  vscode.commands.registerCommand("arduboy-emulator.openEmulator", async () => {
     // open new webview panel or editor for the emulator
     const panel = vscode.window.createWebviewPanel(
       "arduboyEmulator",
@@ -21,16 +25,37 @@ export function activate(context: vscode.ExtensionContext) {
       }
     );
 
+    // Add panel to active panels set
+    activePanels.add(panel);
+
+    // Remove panel from set when disposed
+    panel.onDidDispose(() => {
+      activePanels.delete(panel);
+    });
+
     // Setup the webview panel
-    setupWebviewPanel(panel, context);
+    await setupWebviewPanel(panel, context);
   });
 
+  // Register command to generate default config file
+  vscode.commands.registerCommand(
+    "arduboy-emulator.generateConfig",
+    async () => {
+      await generateDefaultConfig();
+    }
+  );
 
   // Register webview serializer for panel revival
   vscode.window.registerWebviewPanelSerializer("arduboyEmulator", {
-    async deserializeWebviewPanel(
-      webviewPanel: vscode.WebviewPanel
-    ) {
+    async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel) {
+      // Add panel to active panels set
+      activePanels.add(webviewPanel);
+
+      // Remove panel from set when disposed
+      webviewPanel.onDidDispose(() => {
+        activePanels.delete(webviewPanel);
+      });
+
       // Re-setup the webview panel when VS Code restarts
       webviewPanel.webview.options = {
         enableScripts: true,
@@ -40,13 +65,40 @@ export function activate(context: vscode.ExtensionContext) {
       };
 
       // Re-setup all the functionality
-      setupWebviewPanel(webviewPanel, context);
+      await setupWebviewPanel(webviewPanel, context);
     },
   });
 }
 
+const loadFirmware = async (): Promise<Uint8Array | undefined> => {
+  try {
+    const firmwarePath = await getFirmwarePath();
+    if (!firmwarePath) {
+      vscode.window.showErrorMessage("No workspace folder found");
+      return;
+    }
+
+    // Read the firmware file
+    const firmwareData = await vscode.workspace.fs.readFile(firmwarePath);
+
+    return firmwareData;
+  } catch (error) {
+    vscode.window.showErrorMessage(`Failed to load firmware.hex: ${error}`);
+  }
+};
+
+const loadFile = async (panel: vscode.WebviewPanel) => {
+  const data = await loadFirmware();
+  if (data) {
+    panel.webview.postMessage({
+      command: "firmwareData",
+      data: Array.from(data),
+    });
+  }
+};
+
 // Function to setup webview panel functionality
-function setupWebviewPanel(
+async function setupWebviewPanel(
   panel: vscode.WebviewPanel,
   context: vscode.ExtensionContext
 ) {
@@ -67,46 +119,12 @@ function setupWebviewPanel(
     ],
   };
 
-  // Function to load firmware
-  const loadFirmware = async (): Promise<Uint8Array | undefined> => {
-    try {
-      // Find the workspace folder
-      const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-      if (!workspaceFolder) {
-        vscode.window.showErrorMessage("No workspace folder found");
-        return;
-      }
-
-      // Construct path to firmware.hex
-      const firmwarePath = vscode.Uri.joinPath(
-        workspaceFolder.uri,
-        ".pio",
-        "build",
-        "arduboy",
-        "firmware.hex"
-      );
-
-      // Read the firmware file
-      const firmwareData = await vscode.workspace.fs.readFile(firmwarePath);
-
-	  return firmwareData;
-    } catch (error) {
-      vscode.window.showErrorMessage(`Failed to load firmware.hex: ${error}`);
-    }
-  };
-
   // Handle messages from the webview
   panel.webview.onDidReceiveMessage(
     async (message) => {
       if (message.command === "loadFirmware") {
-        const data = await loadFirmware();
-		if (!data) {
-			return;
-		}
-        panel.webview.postMessage({
-			command: "firmwareData",
-			data: Array.from(data),
-		});
+        await loadFile(panel);
+        vscode.window.showInformationMessage("Emulator firmware reloaded!");
       }
     },
     undefined,
@@ -116,38 +134,42 @@ function setupWebviewPanel(
   // Set up file watcher for auto-reload
   const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
   if (workspaceFolder) {
-    const watcher = vscode.workspace.createFileSystemWatcher(
-      new vscode.RelativePattern(
-        workspaceFolder,
-        ".pio/build/arduboy/firmware.hex"
-      )
+    // Get the firmware path from config or use default
+    const firmwarePath = await getFirmwarePath();
+    if (firmwarePath) {
+      // Create relative pattern from the firmware path
+      const relativePath = vscode.workspace.asRelativePath(firmwarePath);
+      const watcher = vscode.workspace.createFileSystemWatcher(
+        new vscode.RelativePattern(workspaceFolder, relativePath)
+      );
+
+      watcher.onDidChange(() => loadFile(panel));
+      watcher.onDidCreate(() => loadFile(panel));
+
+      // Clean up watcher when panel is disposed
+      panel.onDidDispose(() => watcher.dispose());
+
+      context.subscriptions.push(watcher);
+    }
+
+    // Also watch for changes to the config file itself
+    const configWatcher = vscode.workspace.createFileSystemWatcher(
+      new vscode.RelativePattern(workspaceFolder, "arduboy.ini")
     );
 
-    watcher.onDidChange(async () => {
-      console.log("Firmware file changed, reloading...");
-      await loadFirmware();
-      panel.webview.postMessage({
-        command: "showReloadMessage",
-      });
-    });
+    configWatcher.onDidChange(() => loadFile(panel));
+    configWatcher.onDidCreate(() => loadFile(panel));
 
-    watcher.onDidCreate(async () => {
-      console.log("Firmware file created, loading...");
-      await loadFirmware();
-    });
+    // Clean up config watcher when panel is disposed
+    panel.onDidDispose(() => configWatcher.dispose());
 
-    // Clean up watcher when panel is disposed
-    panel.onDidDispose(() => {
-      watcher.dispose();
-    });
-
-    context.subscriptions.push(watcher);
+    context.subscriptions.push(configWatcher);
   }
 
   panel.webview.html = getPlayerWebviewHtml({
-	ardensUri,
-	panel
-  })
+    ardensUri,
+    panel,
+  });
 }
 
 // This method is called when your extension is deactivated

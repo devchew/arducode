@@ -18,12 +18,8 @@
         "title": "Open Arduboy Emulator"
       },
       {
-        "command": "arduboy-emulator.reloadEmulator",
-        "title": "Reload Arduboy Emulator"
-      },
-      {
-        "command": "arduboy-emulator.createConffig",
-        "title": "Create Arduboy Emulator Config"
+        "command": "arduboy-emulator.generateConfig",
+        "title": "Generate Arduboy Emulator Config"
       }
     ]
   },
