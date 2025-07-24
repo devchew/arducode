@@ -2,8 +2,6 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 
-import { tempGameHex } from "./temp";
-
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -14,104 +12,135 @@ export function activate(context: vscode.ExtensionContext) {
       "Arduboy Emulator",
       vscode.ViewColumn.Beside,
       {
+        enableScripts: true,
         localResourceRoots: [
           vscode.Uri.joinPath(context.extensionUri, "src", "ardens"),
         ],
       }
     );
 
-    const ardensJsPath = vscode.Uri.joinPath(
-      context.extensionUri,
-      "src",
-      "ardens",
-      "ArdensPlayer.js"
-    );
+    // Setup the webview panel
+    setupWebviewPanel(panel, context);
+  });
 
-    // And get the special URI to use with the webview
-    const ardensUri = panel.webview.asWebviewUri(ardensJsPath);
 
-    panel.webview.options = {
-      enableScripts: true,
-      localResourceRoots: [
-        vscode.Uri.joinPath(context.extensionUri, "src", "ardens"),
-      ],
-    };
+  // Register webview serializer for panel revival
+  vscode.window.registerWebviewPanelSerializer("arduboyEmulator", {
+    async deserializeWebviewPanel(
+      webviewPanel: vscode.WebviewPanel,
+      state: any
+    ) {
+      // Re-setup the webview panel when VS Code restarts
+      webviewPanel.webview.options = {
+        enableScripts: true,
+        localResourceRoots: [
+          vscode.Uri.joinPath(context.extensionUri, "src", "ardens"),
+        ],
+      };
 
-    // Function to load firmware
-    const loadFirmware = async () => {
-      try {
-        // Find the workspace folder
-        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-        if (!workspaceFolder) {
-          vscode.window.showErrorMessage("No workspace folder found");
-          return;
-        }
+      // Re-setup all the functionality
+      setupWebviewPanel(webviewPanel, context);
+    },
+  });
+}
 
-        // Construct path to firmware.hex
-        const firmwarePath = vscode.Uri.joinPath(
-          workspaceFolder.uri,
-          ".pio",
-          "build",
-          "arduboy",
-          "firmware.hex"
-        );
+// Function to setup webview panel functionality
+function setupWebviewPanel(
+  panel: vscode.WebviewPanel,
+  context: vscode.ExtensionContext
+) {
+  const ardensJsPath = vscode.Uri.joinPath(
+    context.extensionUri,
+    "src",
+    "ardens",
+    "ArdensPlayer.js"
+  );
 
-        // Read the firmware file
-        const firmwareData = await vscode.workspace.fs.readFile(firmwarePath);
+  // And get the special URI to use with the webview
+  const ardensUri = panel.webview.asWebviewUri(ardensJsPath);
 
-        // Send the firmware data back to the webview
-        panel.webview.postMessage({
-          command: "firmwareData",
-          data: Array.from(firmwareData),
-        });
-      } catch (error) {
-        vscode.window.showErrorMessage(`Failed to load firmware.hex: ${error}`);
+  panel.webview.options = {
+    enableScripts: true,
+    localResourceRoots: [
+      vscode.Uri.joinPath(context.extensionUri, "src", "ardens"),
+    ],
+  };
+
+  // Function to load firmware
+  const loadFirmware = async () => {
+    try {
+      // Find the workspace folder
+      const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+      if (!workspaceFolder) {
+        vscode.window.showErrorMessage("No workspace folder found");
+        return;
       }
-    };
 
-    // Handle messages from the webview
-    panel.webview.onDidReceiveMessage(
-      async (message) => {
-        if (message.command === "loadFirmware") {
-          await loadFirmware();
-        }
-      },
-      undefined,
-      context.subscriptions
-    );
-
-    // Set up file watcher for auto-reload
-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-    if (workspaceFolder) {
-      const watcher = vscode.workspace.createFileSystemWatcher(
-        new vscode.RelativePattern(
-          workspaceFolder,
-          ".pio/build/arduboy/firmware.hex"
-        )
+      // Construct path to firmware.hex
+      const firmwarePath = vscode.Uri.joinPath(
+        workspaceFolder.uri,
+        ".pio",
+        "build",
+        "arduboy",
+        "firmware.hex"
       );
 
-      watcher.onDidChange(async () => {
-        console.log("Firmware file changed, reloading...");
-        await loadFirmware();
-        panel.webview.postMessage({
-          command: "showReloadMessage",
-        });
-      });
+      // Read the firmware file
+      const firmwareData = await vscode.workspace.fs.readFile(firmwarePath);
 
-      watcher.onDidCreate(async () => {
-        console.log("Firmware file created, loading...");
-        await loadFirmware();
+      // Send the firmware data back to the webview
+      panel.webview.postMessage({
+        command: "firmwareData",
+        data: Array.from(firmwareData),
       });
-
-      // Clean up watcher when panel is disposed
-      panel.onDidDispose(() => {
-        watcher.dispose();
-      });
-
-      context.subscriptions.push(watcher);
+    } catch (error) {
+      vscode.window.showErrorMessage(`Failed to load firmware.hex: ${error}`);
     }
+  };
 
-    panel.webview.html = `
+  // Handle messages from the webview
+  panel.webview.onDidReceiveMessage(
+    async (message) => {
+      if (message.command === "loadFirmware") {
+        await loadFirmware();
+      }
+    },
+    undefined,
+    context.subscriptions
+  );
+
+  // Set up file watcher for auto-reload
+  const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+  if (workspaceFolder) {
+    const watcher = vscode.workspace.createFileSystemWatcher(
+      new vscode.RelativePattern(
+        workspaceFolder,
+        ".pio/build/arduboy/firmware.hex"
+      )
+    );
+
+    watcher.onDidChange(async () => {
+      console.log("Firmware file changed, reloading...");
+      await loadFirmware();
+      panel.webview.postMessage({
+        command: "showReloadMessage",
+      });
+    });
+
+    watcher.onDidCreate(async () => {
+      console.log("Firmware file created, loading...");
+      await loadFirmware();
+    });
+
+    // Clean up watcher when panel is disposed
+    panel.onDidDispose(() => {
+      watcher.dispose();
+    });
+
+    context.subscriptions.push(watcher);
+  }
+
+  panel.webview.html = `
 <!DOCTYPE html>
 <html>
 
@@ -211,23 +240,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 </html>
 `;
-  });
-
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
-  const disposable = vscode.commands.registerCommand(
-    "arduboy-emulator.helloWorld",
-    () => {
-      // The code you place here will be executed every time your command is executed
-      // Display a message box to the user
-      vscode.window.showInformationMessage(
-        "Hello World from arduboy-emulator!"
-      );
-    }
-  );
-
-  context.subscriptions.push(disposable);
 }
 
 // This method is called when your extension is deactivated
