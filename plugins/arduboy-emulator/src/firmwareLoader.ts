@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import { getFirmwarePath } from "./config";
 
-// Function to load firmware from the configured path
 export const loadFirmware = async (): Promise<Uint8Array | undefined> => {
   try {
     const firmwarePath = await getFirmwarePath();
@@ -10,7 +9,6 @@ export const loadFirmware = async (): Promise<Uint8Array | undefined> => {
       return;
     }
 
-    // Read the firmware file
     const firmwareData = await vscode.workspace.fs.readFile(firmwarePath);
 
     return firmwareData;
@@ -19,7 +17,6 @@ export const loadFirmware = async (): Promise<Uint8Array | undefined> => {
   }
 };
 
-// Function to load firmware and send it to the webview panel
 export const loadFile = async (panel: vscode.WebviewPanel) => {
   const data = await loadFirmware();
   if (data) {

@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 
-// Function to detect the most likely hex path for the current project
 export const detectHexPath = async (): Promise<string> => {
   const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
   if (!workspaceFolder) {
@@ -8,32 +7,26 @@ export const detectHexPath = async (): Promise<string> => {
   }
 
   try {
-    // Check if platformio.ini exists to suggest PlatformIO paths
     const platformioIniPath = vscode.Uri.joinPath(
       workspaceFolder.uri,
       "platformio.ini"
     );
     await vscode.workspace.fs.readFile(platformioIniPath);
 
-    // If platformio.ini exists, use the default PlatformIO path
     return ".pio/build/arduboy/firmware.hex";
   } catch {
-    // Check for Arduino IDE build structure
     try {
       const buildDir = vscode.Uri.joinPath(workspaceFolder.uri, "build");
       const buildDirStat = await vscode.workspace.fs.stat(buildDir);
       if (buildDirStat.type === vscode.FileType.Directory) {
         return "build/firmware.hex";
       }
-    } catch {
-      // Fallback to default
-    }
+    } catch {}
 
     return ".pio/build/arduboy/firmware.hex";
   }
 };
 
-// Function to generate or update the arduboy.ini config file
 export const generateDefaultConfig = async (): Promise<void> => {
   try {
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
@@ -46,11 +39,9 @@ export const generateDefaultConfig = async (): Promise<void> => {
     const defaultHexPath = await detectHexPath();
 
     try {
-      // Check if config file already exists
       const existingData = await vscode.workspace.fs.readFile(configPath);
       const existingText = new TextDecoder().decode(existingData);
 
-      // Check if hex_path already exists in the file
       const lines = existingText.split(/\r?\n/);
       let hasHexPath = false;
 
@@ -66,7 +57,6 @@ export const generateDefaultConfig = async (): Promise<void> => {
       }
 
       if (!hasHexPath) {
-        // Append hex_path to existing file
         const needsNewline =
           !existingText.endsWith("\n") && existingText.length > 0;
         const appendText = `${
@@ -81,7 +71,6 @@ export const generateDefaultConfig = async (): Promise<void> => {
           "Added hex_path to existing arduboy.ini"
         );
 
-        // Open the updated file for editing
         const document = await vscode.workspace.openTextDocument(configPath);
         await vscode.window.showTextDocument(document);
       } else {
@@ -89,12 +78,10 @@ export const generateDefaultConfig = async (): Promise<void> => {
           "arduboy.ini already contains hex_path configuration"
         );
 
-        // Still open the file for editing
         const document = await vscode.workspace.openTextDocument(configPath);
         await vscode.window.showTextDocument(document);
       }
     } catch (error) {
-      // File doesn't exist, create new one
       const defaultConfig = `# Arduboy Emulator Configuration
 # 
 # Path to the hex file (relative to workspace root)
@@ -126,7 +113,6 @@ hex_path=${defaultHexPath}
         "Created default arduboy.ini configuration file"
       );
 
-      // Open the created file for editing
       const document = await vscode.workspace.openTextDocument(configPath);
       await vscode.window.showTextDocument(document);
     }
@@ -135,7 +121,6 @@ hex_path=${defaultHexPath}
   }
 };
 
-// Function to read and parse arduboy.ini config file
 export const readArduboyConfig = async (): Promise<string | null> => {
   try {
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
@@ -147,42 +132,35 @@ export const readArduboyConfig = async (): Promise<string | null> => {
     const configData = await vscode.workspace.fs.readFile(configPath);
     const configText = new TextDecoder().decode(configData);
 
-    // Parse the config file for hex_path
-    const lines = configText.split(/\r?\n/); // Handle both Windows and Unix line endings
+    const lines = configText.split(/\r?\n/);
     for (const line of lines) {
       const trimmedLine = line.trim();
-      // Skip comments and empty lines
       if (trimmedLine.startsWith("#") || trimmedLine === "") {
         continue;
       }
       if (trimmedLine.startsWith("hex_path=")) {
         const hexPath = trimmedLine.substring("hex_path=".length).trim();
-        return hexPath || null; // Return null if empty after trimming
+        return hexPath || null;
       }
     }
 
     return null;
   } catch (error) {
-    // Config file doesn't exist or can't be read
     return null;
   }
 };
 
-// Function to get the firmware path from config or fallback to default
 export const getFirmwarePath = async (): Promise<vscode.Uri | null> => {
   const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
   if (!workspaceFolder) {
     return null;
   }
 
-  // Try to read config file
   const configHexPath = await readArduboyConfig();
 
   if (configHexPath) {
-    // Use path from config (relative to workspace root)
     return vscode.Uri.joinPath(workspaceFolder.uri, configHexPath);
   } else {
-    // Fallback to default path
     return vscode.Uri.joinPath(
       workspaceFolder.uri,
       ".pio",

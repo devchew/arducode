@@ -3,7 +3,6 @@ import { getPlayerWebviewHtml } from "./playerWebView";
 import { loadFile } from "./firmwareLoader";
 import { setupFileWatchers } from "./fileWatcher";
 
-// Function to setup webview panel functionality
 export const setupWebviewPanel = async (
   panel: vscode.WebviewPanel,
   context: vscode.ExtensionContext
@@ -15,7 +14,6 @@ export const setupWebviewPanel = async (
     "ArdensPlayer.js"
   );
 
-  // And get the special URI to use with the webview
   const ardensUri = panel.webview.asWebviewUri(ardensJsPath);
 
   panel.webview.options = {
@@ -25,7 +23,6 @@ export const setupWebviewPanel = async (
     ],
   };
 
-  // Handle messages from the webview
   panel.webview.onDidReceiveMessage(
     async (message) => {
       if (message.command === "loadFirmware") {
@@ -37,10 +34,8 @@ export const setupWebviewPanel = async (
     context.subscriptions
   );
 
-  // Set up file watchers for auto-reload
   await setupFileWatchers(panel, context);
 
-  // Set the webview HTML content
   panel.webview.html = getPlayerWebviewHtml({
     ardensUri,
     panel,

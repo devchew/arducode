@@ -241,12 +241,10 @@ body {
         }
         
         Module['onRuntimeInitialized'] = function() {
-            // Request the firmware.hex file from the extension
             const vscode = acquireVsCodeApi();
             vscode.postMessage({ command: 'loadFirmware' });
         };
         
-        // Listen for messages from the extension
         window.addEventListener('message', event => {
             const message = event.data;
             if (message.command === 'firmwareData') {

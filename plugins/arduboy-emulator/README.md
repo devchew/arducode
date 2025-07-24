@@ -1,12 +1,11 @@
 # arduboy-emulator README
 
-## User Journey
+## How to Use
 
-- command palette
-- "open arduboy emulator"
-- open new tab with emulator - if posible on side by side with code editor
-- load hex file from build folder
-- run emulator
+- Open the command palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
+- Run **"Open Arduboy Emulator"** to launch the emulator webview
+- The emulator will automatically load the hex file specified in your `arduboy.ini` configuration
+- If the hex file changes, the emulator will prompt you to reload
 
 ## Project Structure
 
@@ -16,13 +15,8 @@
 - `src/fileWatcher.ts` - File system watching for auto-reload functionality
 - `src/webviewPanel.ts` - Webview panel setup and message handling
 - `src/playerWebView.ts` - Webview HTML generation
-- `src/ardens/` - Emulator implementation files
+- `src/ardens/` - Emulator implementation files, raw files from Ardens web build, only the `ArdensPlayer.js` file is used by the extension
 
-on hex file change:
-
-- show toast with "hex file changed, reload emulator [ok] [cancel]"
-- if user clicks "ok", reload emulator
-- if user clicks "cancel", do nothing
 
 ## Configuration
 
@@ -83,4 +77,3 @@ The emulator will automatically reload when:
 
 - The configured hex file changes
 - The `arduboy.ini` configuration file is modified
-

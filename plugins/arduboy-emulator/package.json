@@ -3,10 +3,12 @@
   "displayName": "arduboy-emulator",
   "description": "",
   "version": "0.0.1",
+  "author": "github.com/devchew",
   "engines": {
     "vscode": "^1.102.0"
   },
   "categories": [
+    "Testing",
     "Other"
   ],
   "activationEvents": [],
