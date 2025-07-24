@@ -10,8 +10,11 @@
 
 ## Project Structure
 
-- `src/extension.ts` - Main extension entry point and VS Code integration
+- `src/extension.ts` - Main extension entry point and command registration
 - `src/config.ts` - Configuration file handling and path detection
+- `src/firmwareLoader.ts` - Firmware loading and data processing
+- `src/fileWatcher.ts` - File system watching for auto-reload functionality
+- `src/webviewPanel.ts` - Webview panel setup and message handling
 - `src/playerWebView.ts` - Webview HTML generation
 - `src/ardens/` - Emulator implementation files
 
