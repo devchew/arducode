@@ -7,16 +7,6 @@
 - The emulator will automatically load the hex file specified in your `arduboy.ini` configuration
 - If the hex file changes, the emulator will prompt you to reload
 
-## Project Structure
-
-- `src/extension.ts` - Main extension entry point and command registration
-- `src/config.ts` - Configuration file handling and path detection
-- `src/firmwareLoader.ts` - Firmware loading and data processing
-- `src/fileWatcher.ts` - File system watching for auto-reload functionality
-- `src/webviewPanel.ts` - Webview panel setup and message handling
-- `src/playerWebView.ts` - Webview HTML generation
-- `src/ardens/` - Emulator implementation files, raw files from Ardens web build, only the `ArdensPlayer.js` file is used by the extension
-
 
 ## Configuration
 
@@ -77,3 +67,33 @@ The emulator will automatically reload when:
 
 - The configured hex file changes
 - The `arduboy.ini` configuration file is modified
+
+## known bugs
+
+- after reopening the vscode, the opened emulator webview will not load at all.
+  - workaround: close the webview and reopen it using the command palette.
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request if you find bugs or
+
+## Development
+
+### Update the Ardens Player
+
+Download the latest web_js.zip from the [Ardens Player releases](https://github.com/tiberiusbrown/Ardens/releases),
+extract it into the `ardens` folder in the extension directory.
+
+### test the production build
+
+Run the following command to build the extension for production:
+
+```bash
+pnpm run package:vsix
+```
+
+This will create a `.vsix` file in the root directory. You can install this file in VSCode to test the production build.
+
+```bash
+code --install-extension arduboy-emulator-0.0.1.vsix
+```
