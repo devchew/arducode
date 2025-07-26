@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "compile",
+			"path": "plugins/arduboy-emulator",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "npm: compile - plugins/arduboy-emulator",
+			"detail": "pnpm run check-types && node esbuild.js"
+		}
+	]
+}
