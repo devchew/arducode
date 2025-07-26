@@ -1,6 +1,6 @@
 {
   "name": "arduboy-emulator",
-  "displayName": "arduboy-emulator",
+  "displayName": "arduboy emulator, based on Ardens Emulator",
   "description": "",
   "version": "0.0.1",
   "author": "github.com/devchew",
@@ -11,6 +11,9 @@
     "Testing",
     "Other"
   ],
+  "repository": "https://github.com/devchew/arducode",
+  "license": "MIT",
+  "icon": "ardens.png",
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
@@ -36,17 +39,19 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "pnpm run compile-tests && pnpm run compile",
     "check-types": "tsc --noEmit",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "package:vsix": "vsce package"
   },
   "devDependencies": {
-    "@types/vscode": "^1.102.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
+    "@types/vscode": "^1.102.0",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.6.0",
     "esbuild": "^0.25.3",
     "npm-run-all": "^4.1.5",
-    "typescript": "^5.8.3",
-    "@vscode/test-cli": "^0.0.11",
-    "@vscode/test-electron": "^2.5.2"
+    "typescript": "^5.8.3"
   },
   "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad"
 }

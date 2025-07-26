@@ -9,7 +9,6 @@ export const setupWebviewPanel = async (
 ) => {
   const ardensJsPath = vscode.Uri.joinPath(
     context.extensionUri,
-    "src",
     "ardens",
     "ArdensPlayer.js"
   );
@@ -18,9 +17,7 @@ export const setupWebviewPanel = async (
 
   panel.webview.options = {
     enableScripts: true,
-    localResourceRoots: [
-      vscode.Uri.joinPath(context.extensionUri, "src", "ardens"),
-    ],
+    localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, "ardens")],
   };
 
   panel.webview.onDidReceiveMessage(
