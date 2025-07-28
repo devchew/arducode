@@ -1,14 +1,14 @@
 {
-  "name": "arduboy-emulator",
-  "displayName": "arduboy emulator, based on Ardens Emulator",
-  "description": "",
+  "name": "arduboy-pixel",
+  "displayName": "arduboy pixel art editor",
+  "description": "A pixel art editor for Arduboy devices",
   "version": "0.0.1",
   "author": "github.com/devchew",
   "engines": {
     "vscode": "^1.102.0"
   },
   "categories": [
-    "Testing",
+    "Visualization",
     "Other"
   ],
   "repository": "https://github.com/devchew/arducode",
@@ -18,14 +18,17 @@
   "publisher": "devchew",
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [
+    "customEditors": [
       {
-        "command": "arduboy-emulator.openEmulator",
-        "title": "Open Arduboy Emulator"
-      },
-      {
-        "command": "arduboy-emulator.generateConfig",
-        "title": "Generate Arduboy Emulator Config"
+        "viewType": "catCustoms.catScratch",
+        "displayName": "Cat Scratch",
+        "priority": "option",
+        "selector": [
+          {
+            "filenamePattern": "*.sprite.h"
+            
+          }
+        ]
       }
     ]
   },

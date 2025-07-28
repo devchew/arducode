@@ -9,6 +9,14 @@
 			"problemMatcher": [],
 			"label": "npm: compile - plugins/arduboy-emulator",
 			"detail": "pnpm run check-types && node esbuild.js"
+		}, {
+			"type": "npm",
+			"script": "compile",
+			"path": "plugins/arduboy-pixel",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "npm: compile - plugins/arduboy-pixel",
+			"detail": "pnpm run check-types && node esbuild.js"
 		}
 	]
 }

@@ -38,6 +38,36 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
+  plugins/arduboy-pixel:
+    devDependencies:
+      '@types/mocha':
+        specifier: ^10.0.10
+        version: 10.0.10
+      '@types/node':
+        specifier: 20.x
+        version: 20.19.9
+      '@types/vscode':
+        specifier: ^1.102.0
+        version: 1.102.0
+      '@vscode/test-cli':
+        specifier: ^0.0.11
+        version: 0.0.11
+      '@vscode/test-electron':
+        specifier: ^2.5.2
+        version: 2.5.2
+      '@vscode/vsce':
+        specifier: ^3.6.0
+        version: 3.6.0
+      esbuild:
+        specifier: ^0.25.3
+        version: 0.25.8
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
 packages:
 
   '@azu/format-text@1.0.2':

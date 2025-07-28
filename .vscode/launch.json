@@ -12,6 +12,17 @@
 				"${workspaceFolder}/plugins/arduboy-emulator/dist/**/*.js"
 			],
 			"preLaunchTask": "npm: compile - plugins/arduboy-emulator"
+		}, {
+			"name": "Run arduboy-pixel extension",
+			"type": "extensionHost",
+			"request": "launch",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}/plugins/arduboy-pixel",
+			],
+			"outFiles": [
+				"${workspaceFolder}/plugins/arduboy-pixel/dist/**/*.js"
+			],
+			"preLaunchTask": "npm: compile - plugins/arduboy-pixel"
 		}
 	]
 }
