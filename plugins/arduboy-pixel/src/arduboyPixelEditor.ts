@@ -2,10 +2,10 @@ import * as vscode from "vscode";
 import { getNonce } from "./nonce";
 
 /**
- * Provider for cat scratch editors.
+ * Provider for Arduboy pixel art editors.
  *
- * Cat scratch editors are used for `.cscratch` files, which are just json files.
- * To get started, run this extension and open an empty `.cscratch` file in VS Code.
+ * Arduboy pixel art editors are used for `.sprite.h` files, which contain sprite data.
+ * To get started, run this extension and open a `.sprite.h` file in VS Code.
  *
  * This provider demonstrates:
  *
@@ -13,19 +13,19 @@ import { getNonce } from "./nonce";
  * - Loading scripts and styles in a custom editor.
  * - Synchronizing changes between a text document and a custom editor.
  */
-export class CatScratchEditorProvider
+export class ArduboyPixelEditorProvider
   implements vscode.CustomTextEditorProvider
 {
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
-    const provider = new CatScratchEditorProvider(context);
+    const provider = new ArduboyPixelEditorProvider(context);
     const providerRegistration = vscode.window.registerCustomEditorProvider(
-      CatScratchEditorProvider.viewType,
+      ArduboyPixelEditorProvider.viewType,
       provider
     );
     return providerRegistration;
   }
 
-  private static readonly viewType = "catCustoms.catScratch";
+  private static readonly viewType = "arduboyPixel.spriteEditor";
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 
@@ -91,7 +91,7 @@ export class CatScratchEditorProvider
   private getHtmlForWebview(webview: vscode.Webview): string {
     // Local path to script and css for the webview
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.context.extensionUri, "media", "catScratch.js")
+      vscode.Uri.joinPath(this.context.extensionUri, "media", "arduboyPixel.js")
     );
 
     const styleResetUri = webview.asWebviewUri(
@@ -103,7 +103,11 @@ export class CatScratchEditorProvider
     );
 
     const styleMainUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.context.extensionUri, "media", "catScratch.css")
+      vscode.Uri.joinPath(
+        this.context.extensionUri,
+        "media",
+        "arduboyPixel.css"
+      )
     );
 
     // Use a nonce to whitelist which scripts can be run
@@ -127,7 +131,7 @@ export class CatScratchEditorProvider
 				<link href="${styleVSCodeUri}" rel="stylesheet" />
 				<link href="${styleMainUri}" rel="stylesheet" />
 
-				<title>Cat Scratch</title>
+				<title>Arduboy Pixel Art Editor</title>
 			</head>
 			<body>
 				<div class="notes"></div>
@@ -137,9 +141,6 @@ export class CatScratchEditorProvider
 			</html>`;
   }
 
-  /**
-   * Write out the json to a given document.
-   */
   private updateTextDocument(document: vscode.TextDocument, text: string) {
     const edit = new vscode.WorkspaceEdit();
 
