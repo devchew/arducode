@@ -22,7 +22,7 @@
       {
         "command": "arduboyPixel.openSpriteEditor",
         "title": "Open Sprite Editor",
-        "icon": "$(preview)"
+        "icon": "$(open-preview)"
       }
     ],
     "menus": {
