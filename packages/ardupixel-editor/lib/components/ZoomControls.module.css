@@ -1,18 +1,19 @@
 /* ZoomControls component styles using VS Code CSS variables */
-.zoom-controls-toolbar {
+.zoomControlsToolbar {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
-.zoom-display {
+.zoomDisplay {
   font-size: 13px;
   color: var(--vscode-foreground, #cccccc);
   min-width: 48px;
   text-align: center;
+  line-height: 1;
 }
 
-.zoom-presets {
+.zoomPresets {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -25,7 +26,7 @@
   color: var(--vscode-button-foreground, #ffffff) !important;
 }
 
-.zoom-controls-composition {
+.zoomControlsComposition {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -33,20 +34,31 @@
   padding-left: 16px;
 }
 
-.zoom-label {
+.zoomLabel {
   font-size: 13px;
   color: var(--vscode-descriptionForeground, #999999);
 }
 
-.zoom-controls-composition .zoom-display {
+.zoomControlsComposition .zoomDisplay {
   font-size: 13px;
   color: var(--vscode-foreground, #cccccc);
   width: 48px;
   text-align: center;
+  line-height: 1;
 }
 
-.zoom-controls-composition .zoom-presets {
+.zoomControlsComposition .zoomPresets {
   border-left: 1px solid var(--vscode-panel-border, #3c3c3c);
   padding-left: 8px;
   margin-left: 8px;
+}
+
+/* Ensure toolbar buttons are properly aligned */
+.zoomControlsToolbar vscode-toolbar-button,
+.zoomControlsComposition vscode-toolbar-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  vertical-align: middle;
 }

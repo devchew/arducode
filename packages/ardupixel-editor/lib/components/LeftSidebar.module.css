@@ -1,0 +1,87 @@
+/* Left sidebar styles */
+.sidebar {
+  width: 60px;
+  background-color: var(--vscode-sideBar-background, #252526);
+  border-right: 1px solid var(--vscode-panel-border, #3c3c3c);
+  display: flex;
+  flex-direction: column;
+  padding: 8px 4px;
+  box-sizing: border-box;
+}
+
+.toolsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.toolButton {
+  width: 48px;
+  height: 48px;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  color: var(--vscode-icon-foreground, #cccccc);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.toolButton:hover {
+  background-color: var(--vscode-toolbar-hoverBackground, #2a2d2e);
+  border-color: var(--vscode-focusBorder, #007acc);
+}
+
+.toolButton.activeTool {
+  background-color: var(--vscode-button-background, #0e639c);
+  border-color: var(--vscode-focusBorder, #007acc);
+  color: var(--vscode-button-foreground, #ffffff);
+}
+
+.colorsSection {
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid var(--vscode-panel-border, #3c3c3c);
+}
+
+.colorPalette {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.colorButton {
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 2px solid var(--vscode-panel-border, #3c3c3c);
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.colorButton:hover {
+  border-color: var(--vscode-focusBorder, #007acc);
+}
+
+.colorButton.activeColor {
+  border-color: var(--vscode-focusBorder, #007acc);
+  box-shadow: 0 0 0 1px var(--vscode-focusBorder, #007acc);
+}
+
+.colorButtonBlack {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.colorButtonWhite {
+  background-color: #ffffff;
+  color: #000000;
+}

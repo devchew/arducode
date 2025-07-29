@@ -6,6 +6,12 @@
   flex-direction: column;
 }
 
+.mainContent {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
 .canvasArea {
   flex: 1;
 }

@@ -5,7 +5,7 @@ function App() {
   return (
     <>
       <vscode-dev-toolbar></vscode-dev-toolbar>
-      <Demo />;
+      <Demo />
     </>
   );
 }

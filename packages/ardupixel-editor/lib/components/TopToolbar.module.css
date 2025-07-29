@@ -1,0 +1,87 @@
+/* Top toolbar styles */
+.topToolbar {
+  height: 48px;
+  background-color: var(--vscode-editor-background, #1e1e1e);
+  border-bottom: 1px solid var(--vscode-panel-border, #3c3c3c);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.historyControls {
+  display: flex;
+  gap: 4px;
+}
+
+.toolInfo {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.toolLabel {
+  font-weight: 500;
+  color: var(--vscode-foreground, #cccccc);
+  font-size: 13px;
+}
+
+.toolOptions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.slider {
+  appearance: none;
+  height: 4px;
+  background: var(--vscode-progressBar-background, #3c3c3c);
+  border-radius: 2px;
+  outline: none;
+  width: 80px;
+}
+
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--vscode-button-background, #0e639c);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--vscode-button-background, #0e639c);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+.sliderValue {
+  min-width: 20px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground, #999999);
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background-color: var(--vscode-panel-border, #3c3c3c);
+  margin: 0 4px;
+}

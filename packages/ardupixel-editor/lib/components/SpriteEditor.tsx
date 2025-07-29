@@ -2,7 +2,8 @@
 
 import { useState, useCallback, useRef } from "react";
 import { Canvas } from "./Canvas";
-import { Toolbar } from "./Toolbar";
+import { LeftSidebar } from "./LeftSidebar";
+import { TopToolbar } from "./TopToolbar";
 import { useCanvas } from "../hooks/useCanvas";
 import type {
   SpriteEditorProps,
@@ -57,15 +58,12 @@ export function SpriteEditor({
 
   return (
     <div className={`${styles.spriteEditor} ${className}`}>
-      {/* Toolbar */}
+      {/* Top Toolbar */}
       {showToolbar && (
-        <Toolbar
+        <TopToolbar
           activeTool={canvasSettings.tool}
-          onToolChange={(tool) =>
-            setCanvasSettings((prev) => ({ ...prev, tool }))
-          }
           zoom={canvasSettings.zoom}
-          onZoomChange={(zoom) =>
+          onZoomChange={(zoom: number) =>
             setCanvasSettings((prev) => ({ ...prev, zoom }))
           }
           showGrid={canvasSettings.showGrid}
@@ -76,20 +74,16 @@ export function SpriteEditor({
             }))
           }
           eraserSize={canvasSettings.eraserSize}
-          onEraserSizeChange={(size) =>
+          onEraserSizeChange={(size: number) =>
             setCanvasSettings((prev) => ({ ...prev, eraserSize: size }))
           }
           brushSize={canvasSettings.brushSize}
-          onBrushSizeChange={(size) =>
+          onBrushSizeChange={(size: number) =>
             setCanvasSettings((prev) => ({ ...prev, brushSize: size }))
           }
           brushStyle={canvasSettings.brushStyle}
-          onBrushStyleChange={(style) =>
+          onBrushStyleChange={(style: BrushStyle) =>
             setCanvasSettings((prev) => ({ ...prev, brushStyle: style }))
-          }
-          pencilColor={canvasSettings.pencilColor}
-          onPencilColorChange={(pencilColor) =>
-            setCanvasSettings((prev) => ({ ...prev, pencilColor }))
           }
           canUndo={canvasHook.canUndo}
           canRedo={canvasHook.canRedo}
@@ -100,41 +94,58 @@ export function SpriteEditor({
         />
       )}
 
-      {/* Canvas */}
-      <div ref={spriteCanvasAreaRef} className={styles.canvasArea}>
-        <Canvas
-          pixels={sprite.pixels}
-          onPixelsChange={handlePixelsChange}
-          width={sprite.width}
-          height={sprite.height}
-          tool={canvasSettings.tool}
-          zoom={canvasSettings.zoom}
-          showGrid={canvasSettings.showGrid}
-          eraserSize={canvasSettings.eraserSize}
-          brushSize={canvasSettings.brushSize}
-          brushStyle={canvasSettings.brushStyle}
-          pencilColor={canvasSettings.pencilColor}
-          onUndo={canvasHook.undo}
-          onRedo={canvasHook.redo}
-          onToolChange={(tool) =>
-            setCanvasSettings((prev) => ({
-              ...prev,
-              tool,
-            }))
-          }
-          onToggleGrid={() =>
-            setCanvasSettings((prev) => ({
-              ...prev,
-              showGrid: !prev.showGrid,
-            }))
-          }
-          onPencilColorChange={(pencilColor) =>
-            setCanvasSettings((prev) => ({
-              ...prev,
-              pencilColor,
-            }))
-          }
-        />
+      {/* Main Content Area */}
+      <div className={styles.mainContent}>
+        {/* Left Sidebar */}
+        {showToolbar && (
+          <LeftSidebar
+            activeTool={canvasSettings.tool}
+            onToolChange={(tool: DrawingTool) =>
+              setCanvasSettings((prev) => ({ ...prev, tool }))
+            }
+            pencilColor={canvasSettings.pencilColor}
+            onPencilColorChange={(pencilColor: PencilColor) =>
+              setCanvasSettings((prev) => ({ ...prev, pencilColor }))
+            }
+          />
+        )}
+
+        {/* Canvas */}
+        <div ref={spriteCanvasAreaRef} className={styles.canvasArea}>
+          <Canvas
+            pixels={sprite.pixels}
+            onPixelsChange={handlePixelsChange}
+            width={sprite.width}
+            height={sprite.height}
+            tool={canvasSettings.tool}
+            zoom={canvasSettings.zoom}
+            showGrid={canvasSettings.showGrid}
+            eraserSize={canvasSettings.eraserSize}
+            brushSize={canvasSettings.brushSize}
+            brushStyle={canvasSettings.brushStyle}
+            pencilColor={canvasSettings.pencilColor}
+            onUndo={canvasHook.undo}
+            onRedo={canvasHook.redo}
+            onToolChange={(tool: DrawingTool) =>
+              setCanvasSettings((prev) => ({
+                ...prev,
+                tool,
+              }))
+            }
+            onToggleGrid={() =>
+              setCanvasSettings((prev) => ({
+                ...prev,
+                showGrid: !prev.showGrid,
+              }))
+            }
+            onPencilColorChange={(pencilColor: PencilColor) =>
+              setCanvasSettings((prev) => ({
+                ...prev,
+                pencilColor,
+              }))
+            }
+          />
+        </div>
       </div>
     </div>
   );
