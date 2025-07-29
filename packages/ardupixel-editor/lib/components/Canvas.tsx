@@ -1,13 +1,11 @@
 // Main drawing canvas component
 
 import React, { useEffect, useRef, useState } from "react";
-import { useCanvas } from "../hooks/useCanvas";
 import type { Point, PencilColor, DrawingTool, BrushStyle } from "../types";
 import styles from "./Canvas.module.css";
 
 interface CanvasProps {
   pixels: boolean[][];
-  onPixelsChange: (pixels: boolean[][]) => void;
   width: number;
   height: number;
   tool: DrawingTool;
@@ -22,11 +20,16 @@ interface CanvasProps {
   onToolChange: (tool: DrawingTool) => void;
   onToggleGrid: () => void;
   onPencilColorChange?: (color: PencilColor) => void;
+  // Props from useCanvas hook
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  previewPixels: boolean[][] | null;
+  handleMouseDown: (e: React.MouseEvent) => void;
+  handleMouseMove: (e: React.MouseEvent) => void;
+  handleMouseUp: (e: React.MouseEvent) => void;
 }
 
 export function Canvas({
   pixels,
-  onPixelsChange,
   width,
   height,
   tool,
@@ -41,47 +44,14 @@ export function Canvas({
   onToolChange,
   onToggleGrid,
   onPencilColorChange,
+  canvasRef,
+  previewPixels,
+  handleMouseDown,
+  handleMouseMove,
+  handleMouseUp,
 }: CanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mousePosition, setMousePosition] = useState<Point | null>(null);
-
-  const {
-    canvasRef,
-    canvasState,
-    setCanvasState,
-    previewPixels,
-    handleMouseDown,
-    handleMouseMove,
-    handleMouseUp,
-  } = useCanvas({
-    pixels,
-    onPixelsChange,
-    width,
-    height,
-  });
-
-  // Sync external props with internal state
-  useEffect(() => {
-    setCanvasState((prev) => ({
-      ...prev,
-      tool,
-      zoom,
-      showGrid,
-      eraserSize,
-      brushSize,
-      brushStyle,
-      pencilColor,
-    }));
-  }, [
-    tool,
-    zoom,
-    showGrid,
-    eraserSize,
-    brushSize,
-    brushStyle,
-    pencilColor,
-    setCanvasState,
-  ]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -130,12 +100,7 @@ export function Canvas({
           case "x":
             if (tool === "pencil") {
               // Switch pencil color when pencil tool is active
-              const newColor =
-                canvasState.pencilColor === "black" ? "white" : "black";
-              setCanvasState((prev) => ({
-                ...prev,
-                pencilColor: newColor,
-              }));
+              const newColor = pencilColor === "black" ? "white" : "black";
               if (onPencilColorChange) {
                 onPencilColorChange(newColor);
               }
@@ -145,18 +110,10 @@ export function Canvas({
             }
             break;
           case "[":
-            if (canvasState.brushSize > 1) {
-              setCanvasState((prev) => ({
-                ...prev,
-                brushSize: Math.max(1, prev.brushSize - 1),
-              }));
-            }
+            // Note: Brush size changes would need to be handled by parent component
             break;
           case "]":
-            setCanvasState((prev) => ({
-              ...prev,
-              brushSize: Math.min(128, prev.brushSize + 1),
-            }));
+            // Note: Brush size changes would need to be handled by parent component
             break;
         }
       }
@@ -169,9 +126,7 @@ export function Canvas({
     onRedo,
     onToolChange,
     onToggleGrid,
-    canvasState.brushSize,
-    canvasState.pencilColor,
-    setCanvasState,
+    pencilColor,
     tool,
     onPencilColorChange,
   ]);

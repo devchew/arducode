@@ -1,6 +1,6 @@
 // Main Sprite Editor component
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useRef } from "react";
 import { Canvas } from "./Canvas";
 import { LeftSidebar } from "./LeftSidebar";
 import { TopToolbar } from "./TopToolbar";
@@ -45,16 +45,6 @@ export function SpriteEditor({
     width: sprite.width,
     height: sprite.height,
   });
-
-  const handlePixelsChange = useCallback(
-    (pixels: boolean[][]) => {
-      onSpriteChange({
-        ...sprite,
-        pixels,
-      });
-    },
-    [sprite, onSpriteChange]
-  );
 
   return (
     <div className={`${styles.spriteEditor} ${className}`}>
@@ -114,7 +104,6 @@ export function SpriteEditor({
         <div ref={spriteCanvasAreaRef} className={styles.canvasArea}>
           <Canvas
             pixels={sprite.pixels}
-            onPixelsChange={handlePixelsChange}
             width={sprite.width}
             height={sprite.height}
             tool={canvasSettings.tool}
@@ -144,6 +133,11 @@ export function SpriteEditor({
                 pencilColor,
               }))
             }
+            canvasRef={canvasHook.canvasRef}
+            previewPixels={canvasHook.previewPixels}
+            handleMouseDown={canvasHook.handleMouseDown}
+            handleMouseMove={canvasHook.handleMouseMove}
+            handleMouseUp={canvasHook.handleMouseUp}
           />
         </div>
       </div>

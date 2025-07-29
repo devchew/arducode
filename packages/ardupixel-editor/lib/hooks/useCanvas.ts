@@ -13,6 +13,7 @@ interface UseCanvasProps {
 
 export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const isInitialized = useRef(false);
   const [canvasState, setCanvasState] = useState<CanvasState>({
     zoom: 8,
     offsetX: 0,
@@ -43,8 +44,10 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
       // Limit history to 50 items
       if (newHistory.length > 50) {
         newHistory.shift();
+        setHistoryIndex(49); // Keep index at max when trimming
       } else {
-        setHistoryIndex((prev) => prev + 1);
+        const newIndex = newHistory.length - 1;
+        setHistoryIndex(newIndex); // Point to the newly added item
       }
 
       setHistory(newHistory);
@@ -55,8 +58,9 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
   // Undo operation
   const undo = useCallback(() => {
     if (historyIndex > 0) {
-      setHistoryIndex((prev) => prev - 1);
-      const previousState = history[historyIndex - 1];
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      const previousState = history[newIndex];
       onPixelsChange(DrawingUtils.clonePixelGrid(previousState.pixels));
     }
   }, [history, historyIndex, onPixelsChange]);
@@ -64,8 +68,9 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
   // Redo operation
   const redo = useCallback(() => {
     if (historyIndex < history.length - 1) {
-      setHistoryIndex((prev) => prev + 1);
-      const nextState = history[historyIndex + 1];
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      const nextState = history[newIndex];
       onPixelsChange(DrawingUtils.clonePixelGrid(nextState.pixels));
     }
   }, [history, historyIndex, onPixelsChange]);
@@ -367,6 +372,11 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
         }
 
         onPixelsChange(newPixels);
+        // Add the final result to history after shape drawing
+        addToHistory(newPixels);
+      } else {
+        // For pencil/eraser/fill tools, add the current final state to history
+        addToHistory(pixels);
       }
 
       setIsDrawing(false);
@@ -386,7 +396,7 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
 
   // Initialize history
   useEffect(() => {
-    if (history.length === 0) {
+    if (!isInitialized.current && history.length === 0) {
       setHistory([
         {
           pixels: DrawingUtils.clonePixelGrid(pixels),
@@ -394,8 +404,12 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
         },
       ]);
       setHistoryIndex(0);
+      isInitialized.current = true;
     }
   }, [pixels, history.length]);
+
+  const canUndo = historyIndex > 0;
+  const canRedo = historyIndex < history.length - 1;
 
   return {
     canvasRef,
@@ -405,8 +419,8 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
     isDrawing,
     undo,
     redo,
-    canUndo: historyIndex > 0,
-    canRedo: historyIndex < history.length - 1,
+    canUndo,
+    canRedo,
     handleMouseDown,
     handleMouseMove,
     handleMouseUp,
