@@ -94,6 +94,9 @@ export function Canvas({
           case "i":
             onToolChange("invert");
             break;
+          case "z":
+            onToolChange("zoom");
+            break;
           case "g":
             onToggleGrid();
             break;

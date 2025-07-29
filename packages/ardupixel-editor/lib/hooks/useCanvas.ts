@@ -1,7 +1,7 @@
 // Canvas management hook for drawing operations
 
 import { useRef, useCallback, useEffect, useState } from "react";
-import type { Point, DrawingTool, CanvasState, HistoryState } from "../types";
+import type { Point, DrawingTool, HistoryState } from "../types";
 import * as DrawingUtils from "../utils/drawing";
 
 interface UseCanvasProps {
@@ -9,22 +9,28 @@ interface UseCanvasProps {
   onPixelsChange: (pixels: boolean[][]) => void;
   width: number;
   height: number;
+  tool: DrawingTool;
+  zoom: number;
+  eraserSize: number;
+  brushSize: number;
+  brushStyle: string;
+  pencilColor: string;
+  onZoomChange: (zoom: number) => void;
 }
 
-export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
+export function useCanvas({ 
+  pixels, 
+  onPixelsChange, 
+  tool,
+  zoom,
+  eraserSize,
+  brushSize,
+  brushStyle,
+  pencilColor,
+  onZoomChange
+}: UseCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isInitialized = useRef(false);
-  const [canvasState, setCanvasState] = useState<CanvasState>({
-    zoom: 8,
-    offsetX: 0,
-    offsetY: 0,
-    showGrid: true,
-    tool: "pencil",
-    eraserSize: 1,
-    brushSize: 1,
-    brushStyle: "square",
-    pencilColor: "black",
-  });
 
   const [history, setHistory] = useState<HistoryState[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -82,12 +88,12 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
       if (!canvas) return { x: 0, y: 0 };
 
       const rect = canvas.getBoundingClientRect();
-      const x = Math.floor((screenX - rect.left) / canvasState.zoom);
-      const y = Math.floor((screenY - rect.top) / canvasState.zoom);
+      const x = Math.floor((screenX - rect.left) / zoom);
+      const y = Math.floor((screenY - rect.top) / zoom);
 
       return { x, y };
     },
-    [canvasState]
+    [zoom]
   );
 
   // Handle drawing operations
@@ -98,9 +104,9 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
       switch (tool) {
         case "pencil": {
           // Draw with brush size and style, using selected color
-          const size = canvasState.brushSize;
-          const style = canvasState.brushStyle;
-          const pixelValue = canvasState.pencilColor === "black";
+          const size = brushSize;
+          const style = brushStyle;
+          const pixelValue = pencilColor === "black";
 
           if (size === 1) {
             DrawingUtils.setPixelAtPoint(newPixels, point, pixelValue);
@@ -144,7 +150,7 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
 
         case "eraser": {
           // Draw a square eraser
-          const size = canvasState.eraserSize;
+          const size = eraserSize;
           for (
             let dy = -Math.floor(size / 2);
             dy <= Math.floor(size / 2);
@@ -172,6 +178,11 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
             !DrawingUtils.getPixelAtPoint(pixels, point)
           );
           break;
+
+        case "zoom":
+          // Zoom tool doesn't modify pixels, just changes zoom level
+          // This will be handled in mouse events
+          break;
       }
 
       onPixelsChange(newPixels);
@@ -179,10 +190,10 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
     [
       pixels,
       onPixelsChange,
-      canvasState.eraserSize,
-      canvasState.brushSize,
-      canvasState.brushStyle,
-      canvasState.pencilColor,
+      eraserSize,
+      brushSize,
+      brushStyle,
+      pencilColor,
     ]
   );
 
@@ -193,7 +204,7 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
 
       const preview = DrawingUtils.clonePixelGrid(pixels);
 
-      switch (canvasState.tool) {
+      switch (tool) {
         case "line":
           DrawingUtils.drawLine(preview, startPoint, currentPoint, true);
           break;
@@ -255,7 +266,7 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
 
       setPreviewPixels(preview);
     },
-    [pixels, startPoint, canvasState.tool]
+    [pixels, startPoint, tool]
   );
 
   // Mouse event handlers
@@ -265,25 +276,41 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
       setIsDrawing(true);
       setStartPoint(point);
 
-      if (
-        canvasState.tool === "pencil" ||
-        canvasState.tool === "eraser" ||
-        canvasState.tool === "fill"
+      if (tool === "zoom") {
+        // Handle zoom tool click
+        const zoomStep = 1;
+        const maxZoom = 128;
+        const minZoom = 1;
+        
+        if (e.button === 0) {
+          // Left click: zoom in
+          const newZoom = Math.min(maxZoom, zoom + zoomStep);
+          onZoomChange(newZoom);
+        } else if (e.button === 2) {
+          // Right click: zoom out
+          e.preventDefault(); // Prevent context menu
+          const newZoom = Math.max(minZoom, zoom - zoomStep);
+          onZoomChange(newZoom);
+        }
+      } else if (
+        tool === "pencil" ||
+        tool === "eraser" ||
+        tool === "fill"
       ) {
         addToHistory(pixels);
-        draw(point, canvasState.tool);
+        draw(point, tool);
       }
     },
-    [screenToPixel, canvasState.tool, addToHistory, pixels, draw]
+    [screenToPixel, tool, zoom, addToHistory, pixels, draw, onZoomChange]
   );
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
       const point = screenToPixel(e.clientX, e.clientY);
 
-      if (isDrawing) {
-        if (canvasState.tool === "pencil" || canvasState.tool === "eraser") {
-          draw(point, canvasState.tool);
+      if (isDrawing && tool !== "zoom") {
+        if (tool === "pencil" || tool === "eraser") {
+          draw(point, tool);
         } else if (startPoint) {
           updateShapePreview(point);
         }
@@ -292,7 +319,7 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
     [
       screenToPixel,
       isDrawing,
-      canvasState.tool,
+      tool,
       draw,
       startPoint,
       updateShapePreview,
@@ -305,15 +332,18 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
 
       const point = screenToPixel(e.clientX, e.clientY);
 
-      if (
-        canvasState.tool !== "pencil" &&
-        canvasState.tool !== "eraser" &&
-        canvasState.tool !== "fill"
+      if (tool === "zoom") {
+        // Zoom tool doesn't need history or drawing operations
+        // Zoom action was already handled in mouseDown
+      } else if (
+        tool !== "pencil" &&
+        tool !== "eraser" &&
+        tool !== "fill"
       ) {
         addToHistory(pixels);
         const newPixels = DrawingUtils.clonePixelGrid(pixels);
 
-        switch (canvasState.tool) {
+        switch (tool) {
           case "line":
             DrawingUtils.drawLine(newPixels, startPoint, point, true);
             break;
@@ -387,7 +417,7 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
       isDrawing,
       startPoint,
       screenToPixel,
-      canvasState.tool,
+      tool,
       addToHistory,
       pixels,
       onPixelsChange,
@@ -413,8 +443,6 @@ export function useCanvas({ pixels, onPixelsChange }: UseCanvasProps) {
 
   return {
     canvasRef,
-    canvasState,
-    setCanvasState,
     previewPixels,
     isDrawing,
     undo,

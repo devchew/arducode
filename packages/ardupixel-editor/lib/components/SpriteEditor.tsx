@@ -44,6 +44,14 @@ export function SpriteEditor({
     },
     width: sprite.width,
     height: sprite.height,
+    tool: canvasSettings.tool,
+    zoom: canvasSettings.zoom,
+    eraserSize: canvasSettings.eraserSize,
+    brushSize: canvasSettings.brushSize,
+    brushStyle: canvasSettings.brushStyle,
+    pencilColor: canvasSettings.pencilColor,
+    onZoomChange: (zoom: number) =>
+      setCanvasSettings((prev) => ({ ...prev, zoom })),
   });
 
   return (
@@ -79,7 +87,7 @@ export function SpriteEditor({
           canRedo={canvasHook.canRedo}
           onUndo={canvasHook.undo}
           onRedo={canvasHook.redo}
-          enableScrollZoom={true}
+          enableScrollZoom={canvasSettings.tool === "zoom"}
           scrollZoomTarget={spriteCanvasAreaRef}
         />
       )}

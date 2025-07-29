@@ -24,6 +24,7 @@ const tools: {
   { id: "circle", icon: "circle-outline", label: "Circle" },
   { id: "filled-circle", icon: "circle-filled", label: "Filled Circle" },
   { id: "invert", icon: "symbol-color", label: "Invert Selection" },
+  { id: "zoom", icon: "zoom-in", label: "Zoom" },
 ];
 
 export function LeftSidebar({

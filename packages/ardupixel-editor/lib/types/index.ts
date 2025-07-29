@@ -30,7 +30,8 @@ export type DrawingTool =
   | "circle"
   | "filled-rectangle"
   | "filled-circle"
-  | "invert";
+  | "invert"
+  | "zoom";
 
 export type BrushStyle = "square" | "round";
 export type PencilColor = "black" | "white";

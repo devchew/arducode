@@ -54,6 +54,7 @@ export function TopToolbar({
       circle: "Circle",
       "filled-circle": "Filled Circle",
       invert: "Invert Selection",
+      zoom: "Zoom",
     };
     return toolNames[tool];
   };
