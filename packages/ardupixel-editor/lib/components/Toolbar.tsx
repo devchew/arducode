@@ -85,7 +85,7 @@ export function Toolbar({
       {/* History Controls */}
       <vscode-toolbar-group>
         <vscode-toolbar-button
-          icon="undo"
+          icon="discard"
           label="Undo (Ctrl+Z)"
           disabled={!canUndo}
           onClick={onUndo}
