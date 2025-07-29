@@ -1,0 +1,37 @@
+.canvas {
+  image-rendering: pixelated;
+}
+
+.canvas-container {
+  flex: 1;
+  background-color: var(--vscode-editor-background, #1e1e1e);
+  overflow: auto;
+}
+
+.canvas-wrapper {
+  padding: 16px;
+}
+
+.canvas-frame {
+  background-color: var(--vscode-input-background, #3c3c3c);
+  display: inline-block;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.canvas-element {
+  cursor: crosshair;
+  border: 1px solid var(--vscode-input-border, #3c3c3c);
+}
+
+.canvas-info {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground, #999999);
+}
+
+.canvas-info p {
+  margin: 0;
+  line-height: 1.4;
+}

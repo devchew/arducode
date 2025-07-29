@@ -23,6 +23,10 @@
     "react-dom": "^19.1.0"
   },
   "dependencies": {
+    "@vscode-elements/elements": "^1.17.0",
+    "@vscode-elements/webview-playground": "^1.9.0",
+    "@vscode/codicons": "^0.0.38",
+    "lucide-react": "^0.344.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },

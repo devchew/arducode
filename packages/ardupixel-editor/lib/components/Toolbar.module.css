@@ -1,0 +1,184 @@
+/* Toolbar component styles using VS Code CSS variables */
+.toolbar {
+  padding: 8px;
+  border-bottom: 1px solid var(--vscode-panel-border, #3c3c3c);
+  background-color: var(--vscode-editor-background, #1e1e1e);
+  color: var(--vscode-foreground, #cccccc);
+}
+
+/* Enhanced styling for selected/pressed toolbar buttons */
+.toolbar vscode-toolbar-button[pressed] {
+  background-color: var(--vscode-button-background, #0e639c) !important;
+  color: var(--vscode-button-foreground, #ffffff) !important;
+  border: 1px solid var(--vscode-focusBorder, #007acc) !important;
+  box-shadow: 0 0 0 1px var(--vscode-focusBorder, #007acc) !important;
+}
+
+.toolbar vscode-toolbar-button[pressed]:hover {
+  background-color: var(--vscode-button-hoverBackground, #1177bb) !important;
+}
+
+/* Additional visual indicator for active tool */
+.activeTool {
+  position: relative;
+}
+
+.activeTool::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 2px;
+  background-color: var(--vscode-focusBorder, #007acc);
+  border-radius: 1px;
+}
+
+/* Custom slider styles for range inputs */
+.toolbarSlider {
+  appearance: none;
+  height: 4px;
+  background: var(--vscode-progressBar-background, #3c3c3c);
+  border-radius: 2px;
+  outline: none;
+  width: 60px;
+}
+
+.toolbarSlider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--vscode-button-background, #0e639c);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.toolbarSlider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--vscode-button-background, #0e639c);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+.toolbarValue {
+  min-width: 20px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground, #999999);
+}
+
+.toolbarLabelSmall {
+  font-size: 11px;
+  color: var(--vscode-descriptionForeground, #999999);
+}
+
+/* Color button styles for pencil tool */
+.toolbarColorButtonBlack {
+  filter: brightness(0.3);
+}
+
+.toolbarColorButtonWhite {
+  filter: brightness(1.5);
+}
+
+.active-button:hover {
+  background-color: var(--vscode-button-hoverBackground, #1177bb) !important;
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background-color: var(--vscode-panel-border, #3c3c3c);
+}
+
+.toolbar-label {
+  font-size: 13px;
+  color: var(--vscode-foreground, #cccccc);
+}
+
+.toolbar-label-small {
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground, #999999);
+}
+
+.toolbar-value {
+  font-size: 13px;
+  min-width: 24px;
+  color: var(--vscode-foreground, #cccccc);
+}
+
+.toolbar-slider {
+  width: 64px;
+  height: 20px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--vscode-input-background, #3c3c3c);
+  border: 1px solid var(--vscode-input-border, #3c3c3c);
+  border-radius: 2px;
+  outline: none;
+}
+
+.toolbar-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--vscode-button-background, #0e639c);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.toolbar-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--vscode-button-background, #0e639c);
+  border-radius: 2px;
+  cursor: pointer;
+  border: none;
+}
+
+.toolbar-brush-group {
+  display: flex;
+  gap: 4px;
+}
+
+.toolbar-color-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.toolbar-color-button {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  border: 1px solid var(--vscode-button-border, #3c3c3c);
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.toolbar-color-button:hover {
+  border-color: var(--vscode-focusBorder, #007acc);
+}
+
+.toolbar-color-button-black {
+  background-color: #000000;
+}
+
+.toolbar-color-button-white {
+  background-color: #ffffff;
+  border-color: var(--vscode-button-border, #3c3c3c);
+}
+
+.toolbar-help {
+  display: flex;
+  align-items: center;
+}

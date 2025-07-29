@@ -1,0 +1,52 @@
+/* ZoomControls component styles using VS Code CSS variables */
+.zoom-controls-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zoom-display {
+  font-size: 13px;
+  color: var(--vscode-foreground, #cccccc);
+  min-width: 48px;
+  text-align: center;
+}
+
+.zoom-presets {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+/* Active state for preset buttons */
+.active {
+  background-color: var(--vscode-button-background, #0e639c) !important;
+  color: var(--vscode-button-foreground, #ffffff) !important;
+}
+
+.zoom-controls-composition {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-left: 1px solid var(--vscode-panel-border, #3c3c3c);
+  padding-left: 16px;
+}
+
+.zoom-label {
+  font-size: 13px;
+  color: var(--vscode-descriptionForeground, #999999);
+}
+
+.zoom-controls-composition .zoom-display {
+  font-size: 13px;
+  color: var(--vscode-foreground, #cccccc);
+  width: 48px;
+  text-align: center;
+}
+
+.zoom-controls-composition .zoom-presets {
+  border-left: 1px solid var(--vscode-panel-border, #3c3c3c);
+  padding-left: 8px;
+  margin-left: 8px;
+}
