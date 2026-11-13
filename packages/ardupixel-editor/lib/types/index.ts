@@ -31,7 +31,8 @@ export type DrawingTool =
   | "filled-rectangle"
   | "filled-circle"
   | "invert"
-  | "zoom";
+  | "zoom"
+  | "stamp";
 
 export type BrushStyle = "square" | "round";
 export type PencilColor = "black" | "white";

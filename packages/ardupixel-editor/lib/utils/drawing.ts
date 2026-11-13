@@ -211,3 +211,37 @@ export function invertPixels(
     }
   }
 }
+
+export function applyBrush(
+  pixels: boolean[][],
+  centerX: number,
+  centerY: number,
+  size: number,
+  style: string,
+  value: boolean
+): void {
+  const radius = Math.floor(size / 2);
+  
+  for (let y = -radius; y <= radius; y++) {
+    for (let x = -radius; x <= radius; x++) {
+      const pixelX = centerX + x;
+      const pixelY = centerY + y;
+      
+      // Check bounds
+      if (pixelY >= 0 && pixelY < pixels.length && pixelX >= 0 && pixelX < pixels[0].length) {
+        let shouldApply = false;
+        
+        if (style === 'square') {
+          shouldApply = true;
+        } else if (style === 'round') {
+          const distance = Math.sqrt(x * x + y * y);
+          shouldApply = distance <= radius;
+        }
+        
+        if (shouldApply) {
+          pixels[pixelY][pixelX] = value;
+        }
+      }
+    }
+  }
+}
